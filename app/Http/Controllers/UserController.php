@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Webpatser\Uuid\Uuid;
 
 class UserController extends Controller
 {
@@ -19,30 +22,68 @@ class UserController extends Controller
     //
     public function index()
     {
-        return ['message' => 'hello word'];
+        $users = User::paginate(5);
+        
+        return response()->json(['data' => $users], 200);
     }
 
     //
-    public function store()
+    public function store(Request $request)
+    {
+        // Validation
+        $this->validate($request,[
+            'username' => 'required',
+            'email' => 'required|email',
+            'password' => 'required'
+        ]);
+
+        $user = new User();
+        // Generate UUID
+        $user->uuid = Uuid::generate(4);
+
+        $user->username = $request->username;
+        $user->email = $request->email;
+        $user->password = Hash::make($request->password);
+        $user->save();
+
+        return $this->success("Create success", 201);
+    }
+
+    //
+    public function show($id)
+    {
+        $user = User::findOrFail($id);
+
+        $data = [
+            'full_name' => $user->profile->full_name,
+            'birth_place' => $user->profile->birth_place,
+            'birth_date' => $user->profile->birth_data
+        ];
+
+        return response()->json($user, 200);
+    }
+
+    //
+    public function update($id)
     {
 
     }
 
     //
-    public function show()
+    public function destroy($id)
     {
 
     }
 
-    //
-    public function update()
+    // Don`t Repeat your code
+    protected function success($data, $code)
     {
-
+        return response()->json(['data' => $data], $code);
     }
 
-    //
-    public function destroy()
+    // Don`t Repeat your code
+    protected function error($message, $code)
     {
-
+        return response()->json(['message' => $message], $code);
     }
 }

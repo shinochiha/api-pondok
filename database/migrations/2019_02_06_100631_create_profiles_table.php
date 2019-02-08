@@ -21,20 +21,19 @@ class CreateProfilesTable extends Migration
                   ->on('users')
                   ->onDelete('cascade');
             $table->string('full_name');
+            $table->enum('gender', ['male', 'female']);
             $table->string('birth_place');
-            $table->date('birth_data');
+            $table->date('birth_date');
             $table->text('address');
-            $table->string('province');
             $table->string('city');
-            $table->string('phone_wa');
+            $table->string('province');
+            $table->string('wa');
+            $table->string('fb');
             $table->string('hobby');
             $table->string('dream');
-            $table->string('fb');
-            $table->enum('gender', ['male', 'female']);
-            $table->string('qur`an');
-            $table->string('phone');
-            $table->string('photo');
             $table->string('idol');
+            $table->string('qur`an');
+            $table->string('photo');
             $table->timestamps();
         });
     }

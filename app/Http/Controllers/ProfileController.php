@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Profile;
+use Illuminate\Http\Request;
+
 class ProfileController extends Controller
 {
     /**
@@ -14,5 +17,19 @@ class ProfileController extends Controller
         //
     }
 
-    //
+    public function index()
+    {
+        $profile = User::paginate(5);
+
+        return response()->json(['data' => $profile], 200);
+    }
+
+    public function store(Request $request)
+    {
+        $profile = new Profile();
+
+        $profile->user_id = user()->id;
+        dd($profile);
+    }
+
 }
