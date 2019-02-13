@@ -16,25 +16,29 @@ class CreateProfilesTable extends Migration
         Schema::create('profiles', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('user_id');
-            $table->foreign('user_id')
-                  ->references('id')
-                  ->on('users')
-                  ->onDelete('cascade');
-            $table->string('full_name');
+            $table->string('uuid');
+            $table->string('fullname');
             $table->enum('gender', ['male', 'female']);
             $table->string('birth_place');
             $table->date('birth_date');
             $table->text('address');
             $table->string('city');
             $table->string('province');
+            $table->string('phone');
             $table->string('wa');
             $table->string('fb');
             $table->string('hobby');
             $table->string('dream');
             $table->string('idol');
-            $table->string('qur`an');
+            $table->string('quran');
             $table->string('photo');
             $table->timestamps();
+            $table->softDeletes();
+            # foreign key
+            $table->foreign('user_id')
+                  ->references('id')
+                  ->on('users')
+                  ->onDelete('cascade');
         });
     }
 

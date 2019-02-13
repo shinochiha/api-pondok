@@ -2,88 +2,107 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Webpatser\Uuid\Uuid;
+use Neomerx\JsonApi\Encoder\Encoder;
+use Neomerx\JsonApi\Schema\Link;
+use Neomerx\JsonApi\Http\Query\BaseQueryParser as Parser;
+use App\Models\User;
+use App\Http\Schemas\UserSchema;
+use App\Models\Profile;
+use App\Http\Schemas\ProfileSchema;
+use App\Models\Education;
+use App\Http\Schemas\EducationSchema;
+use App\Models\Family;
+use App\Http\Schemas\FamilySchema;
 
 class UserController extends Controller
 {
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
+    public function index(Request $req)
     {
-        //
-    }
-
-    //
-    public function index()
-    {
-        $users = User::paginate(5);
-        
-        return response()->json(['data' => $users], 200);
-    }
-
-    //
-    public function store(Request $request)
-    {
-        // Validation
-        $this->validate($request,[
-            'username' => 'required',
-            'email' => 'required|email',
-            'password' => 'required'
-        ]);
-
-        $user = new User();
-        // Generate UUID
-        $user->uuid = Uuid::generate(4);
-
-        $user->username = $request->username;
-        $user->email = $request->email;
-        $user->password = Hash::make($request->password);
-        $user->save();
-
-        return $this->success("Create success", 201);
-    }
-
-    //
-    public function show($id)
-    {
-        $user = User::findOrFail($id);
-
-        $data = [
-            'full_name' => $user->profile->full_name,
-            'birth_place' => $user->profile->birth_place,
-            'birth_date' => $user->profile->birth_data
+        $user = User::all();
+        // if (empty($req->fields))
+        // dd(json_decode($req->all(), true));
+        $meta = [
+            "copyright" => "Copyright 2019 PondokProgrammer Corp.",
+            "authors" => "Students",
         ];
-
-        return response()->json($user, 200);
+        $isSubUrl = false;
+        $value = url('/v1/users?%s');
+        $hasMeta  = false;
+        $links    = [
+            Link::FIRST => new Link($isSubUrl, sprintf($value, 'first'), $hasMeta),
+            Link::LAST  => new Link($isSubUrl, sprintf($value, 'last'), $hasMeta),
+            Link::PREV  => new Link($isSubUrl, sprintf($value, 'prev'), $hasMeta),
+            Link::NEXT  => new Link($isSubUrl, sprintf($value, 'next'), $hasMeta),
+        ];
+        // $included=[];
+        if (!empty($req->all())) {
+            $parser = new Parser($req->all());
+            foreach ($parser->getIncludes() as $key => $value) {
+                $included[] = $key;
+            }
+            foreach ($parser->getFields() as $key => $value) {
+                $fields[$key] = $value;
+            }
+        }
+        // dd($included);(array)$parser->getIncludes()
+        $encoder = Encoder::instance([
+            User::class => UserSchema::class,
+            Profile::class => ProfileSchema::class,
+            Education::class => EducationSchema::class,
+            Family::class => FamilySchema::class,
+        ]);
+        if (!empty($included)) {
+            $encoder->withIncludedPaths($included);
+        }
+        if (!empty($fields)) {
+            $encoder->withFieldSets($fields);
+        }
+        $result = $encoder
+            ->withEncodeOptions(JSON_PRETTY_PRINT)
+            ->withUrlPrefix(url('/v1'))
+            ->withLinks($links)
+            ->withMeta($meta)
+            ->encodeData($user);
+        
+        return response($result, 200, ['Content-Type' => 'application/vnd.api+json']);
     }
 
-    //
-    public function update($id)
+    public function show($uuid)
     {
+        $user = User::where('uuid', $uuid)->first();
 
-    }
+        // UserSchema::$isShowCustomLinks = false;
+        $encoder                       = Encoder::instance([
+            User::class => UserSchema::class,
+            Profile::class => ProfileSchema::class,
+            Education::class => EducationSchema::class,
+            Family::class => FamilySchema::class,
+        ])->withEncodeOptions(JSON_PRETTY_PRINT);
 
-    //
-    public function destroy($id)
-    {
+        $result = $encoder
+            ->withIncludedPaths([
+                // Paths to be included. Note 'profile.family' will not be shown.
+                'profile',
+                'profile.education',
+            ])
+            ->withFieldSets([
+                // Attributes and relationships that should be shown
+                'users'  => ['name', 'profile'],
+                'profile'  => ['education'],
+                'education' => ['latest_major'],
+            ])
+            ->encodeData($user);
 
-    }
-
-    // Don`t Repeat your code
-    protected function success($data, $code)
-    {
-        return response()->json(['data' => $data], $code);
-    }
-
-    // Don`t Repeat your code
-    protected function error($message, $code)
-    {
-        return response()->json(['message' => $message], $code);
-    }
+        // return $result;
+        // $encoder = Encoder::instance([
+        //     User::class => UserSchema::class,
+        // ])$encoder->encodeData($user)
+        // ->withUrlPrefix(url('/v1'))
+        // ->withEncodeOptions(JSON_PRETTY_PRINT);
+        
+        return response($result, 200, ['Content-Type' => 'application/vnd.api+json']);
+    }  
 }

@@ -4,17 +4,16 @@ $router->get('/', function(){
 	return 'Hello World!';
 });
 
-$router->group([
-	'prefix' => 'v1'
-], 	function() use ($router) {
-
+$router->group(['prefix' => 'v1'], function() use ($router) {
+	# user
 	$router->get('users', 'UserController@index');
-	$router->get('user/{id}', 'UserController@show');
-	$router->post('users', 'UserController@store');
-	$router->put('user/{id}', 'UserController@update');
-	$router->delete('user/{id}', 'UserController@destroy');
+	$router->get('users/{uuid}', 'UserController@show');
+	// $router->post('users', 'UserController@store');
+	// $router->put('user/{uuid}', 'UserController@update');
+	// $router->delete('user/{uuid}', 'UserController@destroy');
 
-	// profile
-	$router->post('profile', 'ProfileController@store');
+	# profile
+	$router->get('users/{uuid}/profile', 'ProfileController@show');
+	// $router->post('users/{uuid}/profile', 'ProfileController@store');
 
 });

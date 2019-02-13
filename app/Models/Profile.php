@@ -1,20 +1,32 @@
 <?php 
 
- namespace App\Models;
+namespace App\Models;
 
- use App\Models\User;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
- use App\Models\Profile;
- use Illuminate\Database\Eloquent\Model;
+class Profile extends Model
+{
+	use SoftDeletes;
 
- class Profile extends Model
- {
- 	protected $guarded = [];
+	protected $guarded = ['id'];
+	protected $hidden = [
+        'created_at', 'updated_at'
+    ];
 
- 	// Relation One to One , User -> Profile
- 	public function user()
- 	{
- 		return $this->belongsTo(User::class);
- 	}
- }
+    # Relationships
+	public function user()
+	{
+		return $this->belongsTo(User::clas);
+	}
 
+	public function education()
+    {
+        return $this->hasOne(Education::class);
+    }
+
+    public function family()
+    {
+        return $this->hasOne(Family::class);
+    }
+}

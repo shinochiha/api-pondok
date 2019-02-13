@@ -1,7 +1,8 @@
 <?php
 
-use App\Models\User;
 use Illuminate\Database\Seeder;
+use App\Models\User;
+use App\Models\Profile;
 
 class DatabaseSeeder extends Seeder
 {
@@ -18,6 +19,7 @@ class DatabaseSeeder extends Seeder
     	User::truncate();
 
     	factory(User::class, 3)->create();
+        factory(Profile::class, 9)->create();
 
     	// Enable it back
         DB::statement('SET FOREIGN_KEY_CHECKS = 1');
