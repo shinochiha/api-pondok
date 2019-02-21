@@ -28,11 +28,11 @@ class UserSchema extends BaseSchema
     {
         return [
             'profile' => [
-                self::RELATIONSHIP_LINKS_SELF    => false,
+                self::RELATIONSHIP_LINKS_SELF    => true,
                 self::RELATIONSHIP_LINKS_RELATED => true,
 
                 // Data include supported as well as other cool features
-                // self::RELATIONSHIP_DATA => $user->profile,
+                self::RELATIONSHIP_DATA => $user->profile,
             ],
         ];
     }
