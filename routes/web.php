@@ -1,20 +1,16 @@
 <?php
 
-$router->get('/', function(){
-	return 'Hello World!';
-});
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider within a group which
+| contains the "web" middleware group. Now create something great!
+|
+*/
 
-$router->group([
-	'prefix' => 'v1'
-], 	function() use ($router) {
-
-	$router->get('users', 'UserController@index');
-	$router->get('user/{id}', 'UserController@show');
-	$router->post('users', 'UserController@store');
-	$router->put('user/{id}', 'UserController@update');
-	$router->delete('user/{id}', 'UserController@destroy');
-
-	// profile
-	$router->post('profile', 'ProfileController@store');
-
+Route::get('/', function () {
+    return view('welcome');
 });
