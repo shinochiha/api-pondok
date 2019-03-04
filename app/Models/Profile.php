@@ -4,17 +4,27 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Traits\UuidGenerator;
 
 class Profile extends Model
 {
-	use SoftDeletes;
+	use SoftDeletes, UuidGenerator;
 
-	protected $guarded = ['id'];
-	protected $hidden = [
-        'created_at', 'updated_at'
+	protected $guarded = [
+        'id', 'uuid', 'created_at', 'updated_at'
     ];
 
-    # Relationships
+    /**
+     * Get the route key for the model.
+     *
+     * @return string
+     */
+    public function getRouteKeyName()
+    {
+        return 'uuid';
+    }
+
+    # Relationship(s)
 	public function user()
 	{
 		return $this->belongsTo(User::clas);

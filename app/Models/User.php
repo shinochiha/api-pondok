@@ -2,39 +2,55 @@
 
 namespace App\Models;
 
-use Illuminate\Auth\Authenticatable;
-use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
-use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
-use Illuminate\Database\Eloquent\Model;
-use Laravel\Lumen\Auth\Authorizable;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Builder;
+use App\Traits\UuidGenerator;
 
-class User extends Model implements AuthenticatableContract, AuthorizableContract
+class User extends Authenticatable
 {
-    use Authenticatable, Authorizable;
-    use SoftDeletes;
+    use Notifiable, SoftDeletes, UuidGenerator;
 
+    // public static $snakeAttributes = true;
+    
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'uuid', 'email', 'username', 'password'
+        'username', 'email', 'password',
     ];
 
     /**
-     * The attributes excluded from the model's JSON form.
+     * The attributes that should be hidden for arrays.
      *
      * @var array
      */
     protected $hidden = [
-        'password', 'created_at', 'updated_at'
+        'password', 'remember_token'
     ];
 
+    /**
+     * Get the route key for the model.
+     *
+     * @return string
+     */
+    public function getRouteKeyName()
+    {
+        return 'uuid';
+    }
+
+    public function setPasswordAttribute($value)
+    {
+        $this->attributes['password'] = bcrypt($value);
+    }
+
+    # Relationship(s)
     public function profile()
     {
         return $this->hasOne(Profile::class);
     }
+
 }

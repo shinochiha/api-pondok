@@ -15,7 +15,8 @@ class CreateFamiliesTable extends Migration
     {
         Schema::create('families', function (Blueprint $table) {
             $table->increments('id');
-            $table->unsignedInteger('profile_id');
+            $table->unsignedInteger('profile_id')->nullable();
+            $table->uuid('uuid');
             $table->enum('living_parent', ['0', '1', '2', '3', '4', '5']);
             $table->string('guardian');
             $table->string('parent_phone');
@@ -26,6 +27,7 @@ class CreateFamiliesTable extends Migration
             $table->string('parent_income');
             $table->string('total_sibling');
             $table->timestamps();
+            $table->softDeletes();
             # foreign key
             $table->foreign('profile_id')
                   ->references('id')
