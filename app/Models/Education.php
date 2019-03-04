@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Education extends Model
 {
 	// use SoftDeletes;
-	protected $table = 'educations';
+	// protected $table = 'educations';
 	protected $guarded = ['id'];
 	protected $hidden = [
         'created_at', 'updated_at'

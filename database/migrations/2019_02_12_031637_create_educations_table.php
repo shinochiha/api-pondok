@@ -20,7 +20,7 @@ class CreateEducationsTable extends Migration
             $table->string('elementary');
             $table->string('junior_high');
             $table->string('senior_high');
-            $table->string('other');
+            $table->string('other_education');
             $table->string('latest_major');
             $table->timestamps();
             # foreign key

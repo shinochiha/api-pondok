@@ -3,7 +3,6 @@
 namespace App\Http\Schemas;
 
 use Neomerx\JsonApi\Schema\BaseSchema;
-use Neomerx\JsonApi\Schema\Identifier;
 
 class EducationSchema extends BaseSchema
 {
@@ -24,7 +23,7 @@ class EducationSchema extends BaseSchema
             'elementary'  => $education->elementary,
             'junior_high'  => $education->junior_high,
             'senior_high'  => $education->senior_high,
-            'other'  => $education->other,
+            'other_education'  => $education->other_education,
             'latest_major'  => $education->latest_major,
         ];
     }
@@ -32,9 +31,7 @@ class EducationSchema extends BaseSchema
     public function getRelationships($education): iterable
     {
         return [
-         //    'profile' => [
-         //        self::RELATIONSHIP_DATA => new Identifier($education->profile_id, 'profile'),
-         //    ],
+        
         ];
     }
 }

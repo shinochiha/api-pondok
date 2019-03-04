@@ -3,7 +3,6 @@
 namespace App\Http\Schemas;
 
 use Neomerx\JsonApi\Schema\BaseSchema;
-use Neomerx\JsonApi\Schema\Identifier;
 
 class FamilySchema extends BaseSchema
 {
@@ -35,9 +34,7 @@ class FamilySchema extends BaseSchema
     public function getRelationships($family): iterable
     {
         return [
-         //    'profile' => [
-         //        self::RELATIONSHIP_DATA => new Identifier($family->profile_id, 'profile'),
-         //    ],
+
         ];
     }
 }
