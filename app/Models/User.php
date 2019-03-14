@@ -6,11 +6,12 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Laravel\Passport\HasApiTokens;
 use App\Traits\UuidGenerator;
 
 class User extends Authenticatable
 {
-    use Notifiable, SoftDeletes, UuidGenerator;
+    use Notifiable, SoftDeletes, HasApiTokens, UuidGenerator;
 
     // public static $snakeAttributes = true;
     
