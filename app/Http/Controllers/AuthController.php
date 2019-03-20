@@ -57,21 +57,22 @@ class AuthController extends Controller
             'remember_me' => 'boolean'
         ]);
 
-        // Can't use Auth::attempt()
-        $email = $request->input('email');
-        $password = $request->input('password');
-        $user = User::where('email', $email)->first();
-        if (!$user || Hash::check($password, $user->password) == false) {
+        $credentials = request(['email', 'password']);
+
+        if(!Auth::attempt($credentials)) {
             return response()->json([
                 'message' => 'Unauthorized'
             ], 401);
         }
 
+        $user = $request->user();
+
         $tokenResult = $user->createToken('Personal Access Token');
         $token = $tokenResult->token;
 
-        if ($request->remember_me)
+        if ($request->remember_me) {
             $token->expires_at = Carbon::now()->addWeeks(1);
+        }
 
         $token->save();
 
@@ -96,6 +97,55 @@ class AuthController extends Controller
         return response()->json([
             'message' => 'Successfully logged out'
         ]);
+    }
+
+     /**
+     * admin login API
+     * @return \Illuminate\Http\Response
+     */
+    public function adminLogin(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|string|email',
+            'password' => 'required|string',
+            'remember_me' => 'boolean'
+        ]);
+
+        $credentials = $request->only(['email', 'password']);
+        
+        if (Auth::attempt($credentials)) {
+            
+            $user = Auth::user();
+            $success['token'] = $user->createToken('MyApp', ['*'])->accessToken;
+
+            return response()->json(['success' => $success], 200);
+        } else {
+
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+    }
+
+    /**
+     * admin register API
+     * @return \Illuminate\Http\Response
+     */
+    public function adminRegister(Request $request)
+    {
+        $request->validate([
+            'username' => 'required|string',
+            'email' => 'required|string|email|unique:users',
+            'password' => 'required|string|confirmed'
+        ]);
+
+        $user = User::create([
+            'username' => $request->username,
+            'email' => $request->email,
+            'password' => $request->password,
+        ]);
+
+        $success['username'] = $user->username;
+        $success['token'] = $user->createToken('MyApp', ['*'])->accessToken;
+        return response()->json(['success' => $success], 200);
     }
   
     /**

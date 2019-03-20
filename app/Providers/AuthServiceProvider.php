@@ -25,7 +25,17 @@ class AuthServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->registerPolicies();
-
+        Passport::tokensExpireIn(now()->addMinutes(2));
+        Passport::refreshTokensExpireIn(now()->addMinutes(30));
+        Passport::tokensCan([
+            'read-username-email' => 'can read username and email',
+            'read-basic-profile' => 'can read user\'s profile',
+            'read-education-profile' => 'can read user\'s education history',
+            'read-family-profile' => 'can read user\'s family profile',
+            'be-trusted' => 'can browse, read, edit, add and delete data'
+        ]);
+        Passport::enableImplicitGrant();
+        Passport::cookie('PondokIndonesia_cookie');
         Passport::routes();
     }
 }
