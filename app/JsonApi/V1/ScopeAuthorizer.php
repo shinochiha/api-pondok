@@ -6,10 +6,11 @@ use CloudCreativity\LaravelJsonApi\Auth\AbstractAuthorizer;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Request;
+use App\JsonApi\V1\Users\Schema as UserSchema;
+use App\JsonApi\V1\Profiles\Schema as ProfileSchema;
+use App\JsonApi\V1\Education\Schema as EducationSchema;
+use App\JsonApi\V1\Families\Schema as FamilySchema;
 use App\Models\User;
-use App\Models\Profile;
-use App\Models\Education;
-use App\Models\Family;
 
 class ScopeAuthorizer extends AbstractAuthorizer
 {
@@ -27,10 +28,7 @@ class ScopeAuthorizer extends AbstractAuthorizer
      */
     public function index($type, $request)
     {
-        if ($request->user()->tokenCan('be-trusted')) {
-            return true;
-        }
-        return false;
+        return $request->user()->tokenCan('be-trusted');
     }
 
     /**
@@ -46,10 +44,7 @@ class ScopeAuthorizer extends AbstractAuthorizer
      */
     public function create($type, $request)
     {
-        if ($request->user()->tokenCan('be-trusted')) {
-            return true;
-        }
-        return false;
+        return $request->user()->tokenCan('be-trusted');
     }
 
     /**
@@ -65,22 +60,13 @@ class ScopeAuthorizer extends AbstractAuthorizer
      */
     public function read($record, $request)
     {
+        // dump(!$request->user()->tokenCan('read-username-email'));
         if ($request->user()->tokenCan('be-trusted')) {
             return true;
         }
-        if ($request->user()->tokenCan('read-username-email') && $record instanceof User) {
-            $this->can('read', $record);
+        if ($request->user()->tokenCan('read-username-email')) {
+            return $this->can('view', $record);
         }
-        if ($request->user()->tokenCan('read-basic-profile') && $record instanceof Profile) {
-            $this->can('read', $record);
-        }
-        if ($request->user()->tokenCan('read-education-profile') && $record instanceof Education) {
-            $this->can('read', $record);
-        }
-        if ($request->user()->tokenCan('read-family-profile') && $record instanceof Family) {
-            $this->can('read', $record);
-        }
-        return false;
     }
 
     /**
@@ -96,10 +82,7 @@ class ScopeAuthorizer extends AbstractAuthorizer
      */
     public function update($record, $request)
     {
-        if ($request->user()->tokenCan('be-trusted')) {
-            return true;
-        }
-        return false;
+        return $request->user()->tokenCan('be-trusted');
     }
 
     /**
@@ -115,10 +98,30 @@ class ScopeAuthorizer extends AbstractAuthorizer
      */
     public function delete($record, $request)
     {
+        return $request->user()->tokenCan('be-trusted');
+    }
+
+    /**
+     * @override readRelationship AbstractAuthorizer]
+     */
+    public function readRelationship($record, $field, $request)
+    {
+        // dump($record);
+        // dump($field);
+        // dump($request->user()->tokenCan('read-basic-profile') && $field === 'profile');
         if ($request->user()->tokenCan('be-trusted')) {
             return true;
         }
-        return false;
+        if ($request->user()->tokenCan('read-basic-profile') && $field === 'profile') {
+            $this->can('view', $record);
+        }
+        if ($request->user()->tokenCan('read-education-profile') && $field === 'education') {
+            $this->can('view', $record);
+        }
+        if ($request->user()->tokenCan('read-family-profile') && $field === 'family') {
+            $this->can('view', $record);
+        }
+        // return false;
     }
-
+    
 }
