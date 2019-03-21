@@ -28,7 +28,7 @@ class ScopeAuthorizer extends AbstractAuthorizer
      */
     public function index($type, $request)
     {
-        return $request->user()->tokenCan('be-trusted');
+        $this->can('index', $type, $request);
     }
 
     /**
@@ -44,7 +44,7 @@ class ScopeAuthorizer extends AbstractAuthorizer
      */
     public function create($type, $request)
     {
-        return $request->user()->tokenCan('be-trusted');
+        $this->can('create', $type, $request);
     }
 
     /**
@@ -60,13 +60,7 @@ class ScopeAuthorizer extends AbstractAuthorizer
      */
     public function read($record, $request)
     {
-        // dump(!$request->user()->tokenCan('read-username-email'));
-        if ($request->user()->tokenCan('be-trusted')) {
-            return true;
-        }
-        if ($request->user()->tokenCan('read-username-email')) {
-            return $this->can('view', $record);
-        }
+        $this->can('view', $record, $request);
     }
 
     /**
@@ -82,7 +76,7 @@ class ScopeAuthorizer extends AbstractAuthorizer
      */
     public function update($record, $request)
     {
-        return $request->user()->tokenCan('be-trusted');
+        $this->can('update', $record, $request);
     }
 
     /**
@@ -98,7 +92,7 @@ class ScopeAuthorizer extends AbstractAuthorizer
      */
     public function delete($record, $request)
     {
-        return $request->user()->tokenCan('be-trusted');
+        $this->can('delete', $record, $request);
     }
 
     /**
@@ -106,22 +100,7 @@ class ScopeAuthorizer extends AbstractAuthorizer
      */
     public function readRelationship($record, $field, $request)
     {
-        // dump($record);
-        // dump($field);
-        // dump($request->user()->tokenCan('read-basic-profile') && $field === 'profile');
-        if ($request->user()->tokenCan('be-trusted')) {
-            return true;
-        }
-        if ($request->user()->tokenCan('read-basic-profile') && $field === 'profile') {
-            $this->can('view', $record);
-        }
-        if ($request->user()->tokenCan('read-education-profile') && $field === 'education') {
-            $this->can('view', $record);
-        }
-        if ($request->user()->tokenCan('read-family-profile') && $field === 'family') {
-            $this->can('view', $record);
-        }
-        // return false;
+        $this->can('view', $record, $request, $field);
     }
     
 }
