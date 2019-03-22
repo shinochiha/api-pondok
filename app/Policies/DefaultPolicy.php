@@ -18,7 +18,7 @@ class DefaultPolicy
      * @param  Request $request
      * @return mixed
      */
-    public function index(String $type, Request $request, ?String $field = null)
+    public function index(string $type, Request $request, ?string $field = null)
     {
         return $request->user()->tokenCan('be-trusted');
     }
@@ -30,7 +30,7 @@ class DefaultPolicy
      * @param  Model $model
      * @return mixed
      */
-    public function view(User $user, Model $model, Request $request, ?String $field = null)
+    public function view(User $user, Model $model, Request $request, ?string $field = null)
     {
         if ($request->user()->tokenCan('read-username-email') && !isset($model[1]) && !isset($field)) {
             return true;
@@ -53,7 +53,7 @@ class DefaultPolicy
      * @param  \App\Models\User  $user
      * @return mixed
      */
-    public function create(User $user)
+    public function create(User $user, string $type, Request $request)
     {
         return $request->user()->tokenCan('be-trusted');
     }
@@ -65,7 +65,7 @@ class DefaultPolicy
      * @param  Model $model
      * @return mixed
      */
-    public function update(User $user, Model $model)
+    public function update(User $user, Model $model, Request $request)
     {
         return $request->user()->tokenCan('be-trusted');
     }
@@ -77,7 +77,7 @@ class DefaultPolicy
      * @param  Model $model
      * @return mixed
      */
-    public function delete(User $user, Model $model)
+    public function delete(User $user, Model $model, Request $request)
     {
         return $request->user()->tokenCan('be-trusted');
     }
@@ -89,7 +89,7 @@ class DefaultPolicy
      * @param  Model $model
      * @return mixed
      */
-    public function restore(User $user, Model $model)
+    public function restore(User $user, Model $model, Request $request)
     {
         return $request->user()->tokenCan('be-trusted');
     }
@@ -101,7 +101,7 @@ class DefaultPolicy
      * @param  Model $model
      * @return mixed
      */
-    public function forceDelete(User $user, Model $model)
+    public function forceDelete(User $user, Model $model, Request $request)
     {
         return $request->user()->tokenCan('be-trusted');
     }
