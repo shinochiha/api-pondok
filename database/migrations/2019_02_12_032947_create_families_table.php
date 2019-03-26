@@ -18,7 +18,7 @@ class CreateFamiliesTable extends Migration
             $table->unsignedInteger('profile_id')->nullable();
             $table->uuid('uuid');
             $table->enum('living_parent', ['0', '1', '2', '3', '4', '5']);
-            $table->string('guardian');
+            $table->string('guardian')->nullable();
             $table->string('parent_phone');
             $table->string('father_name');
             $table->string('mother_name');

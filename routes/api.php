@@ -18,14 +18,26 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-JsonApi::register('v1')->routes(function ($api) {
-    $api->resource('users')->relationships(function ($relations) {
-        $relations->hasOne('profile');
+// Route::group(['prefix' => 'api/auth'], function () {
+//     Route::post('login', 'AuthController@login');
+//     Route::post('signup', 'AuthController@signup');
+  
+//     Route::group(['middleware' => 'auth:api'], function() {
+//         Route::get('logout', 'AuthController@logout');
+//         Route::get('user', 'AuthController@user');
+//     });
+// });
+
+// Route::group(['middleware' => 'auth:api'], function () {
+    JsonApi::register('v1')->middleware('auth:api')->authorizer('scope')->routes(function ($api) {
+        $api->resource('users')->relationships(function ($relations) {
+            $relations->hasOne('profile');
+        });
+        $api->resource('profiles')->relationships(function ($relations) {
+            $relations->hasOne('education');
+            $relations->hasOne('family');
+        });
+        $api->resource('education');
+        $api->resource('families');
     });
-    $api->resource('profiles')->relationships(function ($relations) {
-        $relations->hasOne('education');
-        $relations->hasOne('family');
-    });
-    $api->resource('education')->id('[\d]+');;
-    $api->resource('families')->id('[\d]+');;
-});
+// });

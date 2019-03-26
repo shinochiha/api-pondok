@@ -6,11 +6,12 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Laravel\Passport\HasApiTokens;
 use App\Traits\UuidGenerator;
 
 class User extends Authenticatable
 {
-    use Notifiable, SoftDeletes, UuidGenerator;
+    use Notifiable, SoftDeletes, HasApiTokens, UuidGenerator;
 
     // public static $snakeAttributes = true;
     
@@ -46,6 +47,11 @@ class User extends Authenticatable
     {
         $this->attributes['password'] = bcrypt($value);
     }
+
+    // public function findForPassport($username)
+    // {
+    //     return $this->where('username', $username)->first();
+    // }
 
     # Relationship(s)
     public function profile()
